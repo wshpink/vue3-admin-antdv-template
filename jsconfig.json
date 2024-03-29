@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "types": ["ant-design-vue/typings/global.d.ts"],
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
