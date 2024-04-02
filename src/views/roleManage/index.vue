@@ -55,7 +55,7 @@
               />
               <a-divider type="vertical" :style="{ margin: '0 20px' }" />
               <DeleteOutlined
-                @click="deleteTableItem(getRoleData, getRoleData)"
+                @click="deleteTableItem(getRoleData, getRoleData, { id: record.id })"
                 :style="{ fontSize: '18px', color: '#E15536' }"
               />
             </span>
@@ -134,8 +134,8 @@ const resetQuery = () => {
 const handleTableChange = (pagination) => {
   state.pagination = pagination
   loadData(getRoleData, 0, {
-    task_Role_PageSize: pagination.pageSize,
-    task_Role_PageIndex: pagination.current,
+    pageSize: pagination.pageSize,
+    page: pagination.current,
   })
 }
 const handleAdd = (type = 'add', record) => {

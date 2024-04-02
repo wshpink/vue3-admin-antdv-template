@@ -17,7 +17,7 @@ const useSearch = () => {
       total: 0,
     },
   })
-  const loadData = (API, arg, paginationParam = {}) => {
+  const loadData = (API, arg, paginationParam = { page: 1, pageSize: 10 }) => {
     //加载数据 若传入arg参数1则加载第一页的内容,searchParam定制化分页查询参数
     if (arg === 1) {
       state.pagination.current = 1
@@ -40,13 +40,13 @@ const useSearch = () => {
     })
   }
 
-  const deleteTableItem = (API, tableApi) => {
+  const deleteTableItem = (API, tableApi, param) => {
     Modal.confirm({
       content: '确定要删除吗？',
       okText: '确定',
       cancelText: '取消',
       onOk() {
-        API({ ...param }).then((res) => {
+        API(param).then((res) => {
           if (res.status == 200) {
             message.success('删除成功')
             loadData(tableApi, 1, tableApi)
