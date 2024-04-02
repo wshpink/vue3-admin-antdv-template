@@ -1,6 +1,12 @@
 //注册全局图标组件
-import { StepBackwardOutlined } from '@ant-design/icons-vue'
-const icons = [StepBackwardOutlined]
+import {
+  StepBackwardOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+} from '@ant-design/icons-vue'
+const icons = [StepBackwardOutlined, SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined]
 
 export default {
   install(app) {

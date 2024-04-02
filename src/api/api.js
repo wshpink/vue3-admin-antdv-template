@@ -1,6 +1,7 @@
 import axios from 'axios'
 import config from './config.js' // 导入默认配置
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 
 export default function $axios(options) {
   return new Promise((resolve, reject) => {
@@ -19,7 +20,7 @@ export default function $axios(options) {
         return config
       },
       (err) => {
-        // Message.error({ message: '请求超时!' });
+        message.error('请求超时')
         return Promise.resolve(err)
       },
     )
@@ -27,25 +28,13 @@ export default function $axios(options) {
     // response 拦截器
     instance.interceptors.response.use(
       (response) => {
-        console.log(12)
         let data
         if (response.data == undefined) {
           data = response.request.responseText
         } else {
           data = response.data
         }
-        console.log(data)
-        if (data.success || data.status == 0) {
-          return data
-        } else {
-          let msgType = {
-            warn: 'warning',
-            error: 'error',
-          }
-          // Message({
-          //   message: data.i18nMessage,
-          //   type: msgType[data.msgLevel]
-          // });
+        if (data.success || data.status == 0 || data.status == 200) {
           return data
         }
       },
@@ -101,7 +90,7 @@ export default function $axios(options) {
           }
         }
         if (err.response?.status !== 401) {
-          // Message.error({ message: err.message })
+          message.error(err.message)
         }
         return Promise.reject(err) // 返回接口返回的错误信息
       },
