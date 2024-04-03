@@ -6,7 +6,7 @@ const useSearch = () => {
   const loading = ref(false)
   const state = reactive({
     pagination: {
-      current: 1,
+      page: 1,
       pageSize: 10,
       pageSizeOptions: ['5', '10', '20', '30', '100'],
       showTotal: (total, range) => {
@@ -17,21 +17,24 @@ const useSearch = () => {
       total: 0,
     },
   })
-  const loadData = (API, arg, paginationParam = { page: 1, pageSize: 10 }) => {
+  const loadData = (API, arg, paginationParam = {}) => {
     //加载数据 若传入arg参数1则加载第一页的内容,searchParam定制化分页查询参数
     if (arg === 1) {
-      state.pagination.current = 1
+      state.pagination.page = 1
       state.pagination.pageSize = 10
+    }
+    if(paginationParam. page) {
+      state.pagination.page = paginationParam. page
+      state.pagination.pageSize = paginationParam. pageSize
     }
     loading.value = true
     API({
       ...queryParam.value,
-      ...paginationParam,
-      //   task_Role_PageSize: pagination.value.pageSize,
-      //   task_Role_PageIndex: pagination.value.current,
+      page:state.pagination.page,
+      pageSize:state.pagination.pageSize,
     }).then((res) => {
       if (res?.status === 200) {
-        dataSource.value = res.data.data
+        dataSource.value = res.data.rows
         state.pagination.total = res.data?.total ? res.data?.total : 0
       } else {
         message.warning(res?.data?.message || res?.data?.msg)
@@ -49,7 +52,7 @@ const useSearch = () => {
         API(param).then((res) => {
           if (res.status == 200) {
             message.success('删除成功')
-            loadData(tableApi, 1, tableApi)
+            loadData(tableApi, 1)
           } else {
             message.error('删除失败')
           }

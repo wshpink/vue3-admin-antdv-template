@@ -5,8 +5,11 @@ import {
   EditOutlined,
   DeleteOutlined,
   PlusOutlined,
+  LoadingOutlined,
+  CloseOutlined,
+  DeliveredProcedureOutlined
 } from '@ant-design/icons-vue'
-const icons = [StepBackwardOutlined, SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined]
+const icons = [StepBackwardOutlined, SearchOutlined, EditOutlined, DeleteOutlined, PlusOutlined, LoadingOutlined, CloseOutlined,DeliveredProcedureOutlined]
 
 export default {
   install(app) {

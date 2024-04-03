@@ -7,7 +7,7 @@
             <a-form-item label="角色名">
               <a-input
                 placeholder="请输入角色名"
-                v-model:value="queryParam.RoleInfo"
+                v-model:value="queryParam.roleName"
                 style="width: 100%"
               />
             </a-form-item>
@@ -31,7 +31,7 @@
       </a-form>
     </div>
     <div style="margin-bottom: 10px">
-      <a-button @click="handleAdd('')" type="primary">新增角色</a-button>
+      <a-button @click="handleAdd('add')" type="primary">新增角色</a-button>
     </div>
     <div>
       <a-table
@@ -47,6 +47,18 @@
         @change="handleTableChange"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'voiceprint'">
+            <span>{{ record.voiceprint }}</span>
+          </template> 
+          <template v-if="column.key === 'corpus'">
+            <span>{{ record.corpus }}</span>
+          </template> 
+          <template v-if="column.key === 'description'">
+            <a-tooltip>
+              <template #title>{{record.description}}</template>
+              {{record.description?`${record.description.substring(0, 15)}${record.description.length > 15? '...' : ''}` : ''}}
+            </a-tooltip>
+          </template> 
           <template v-if="column.key === 'action'">
             <span>
               <EditOutlined
@@ -55,7 +67,12 @@
               />
               <a-divider type="vertical" :style="{ margin: '0 20px' }" />
               <DeleteOutlined
-                @click="deleteTableItem(getRoleData, getRoleData, { id: record.id })"
+                @click="deleteTableItem(deleteRole, getRoleData, { id: record.id })"
+                :style="{ fontSize: '18px', color: '#E15536' }"
+              />
+              <a-divider type="vertical" :style="{ margin: '0 20px' }" />
+              <DeliveredProcedureOutlined
+                @click="handleAdd('detail', record)"
                 :style="{ fontSize: '18px', color: '#E15536' }"
               />
             </span>
@@ -63,11 +80,11 @@
         </template>
       </a-table>
     </div>
+    <roleEdit @ok="searchQuery" ref="editRef" />
   </a-card>
-  <roleEdit ref="editRef" />
 </template>
 <script setup name="roleManage">
-import { getRoleData } from '../../api'
+import { getRoleData, deleteRole } from '../../api'
 import { ref, h, onMounted } from 'vue'
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 // import { message } from 'ant-design-vue'
@@ -78,48 +95,51 @@ const { queryParam, dataSource, loading, state, loadData, deleteTableItem } = us
 const columns = ref([
   {
     title: '角色名',
-    dataIndex: 'roleName',
-    key: 'roleName',
+    dataIndex: 'name',
+    key: 'name',
     align: 'center',
+    minWidth: 300,
   },
   {
     title: '角色编码',
-    dataIndex: 'roleCode',
-    key: 'roleCode',
+    dataIndex: 'code',
+    key: 'code',
     align: 'center',
+    minWidth: 300,
   },
   {
     title: '角色设定/描述',
-    dataIndex: 'roleDescription',
-    key: 'roleDescription',
+    dataIndex: 'description',
+    key: 'description',
     align: 'center',
+    minWidth: 300,
   },
   {
     title: '声纹',
-    dataIndex: 'roleVoiceprint',
-    key: 'roleVoiceprint',
+    dataIndex: 'voiceprint',
+    key: 'voiceprint',
     align: 'center',
-    width: 150,
+    minWidth: 150,
   },
   {
     title: '向量库',
-    dataIndex: 'roleCorpus',
-    key: 'roleCorpus',
+    dataIndex: 'corpus',
+    key: 'corpus',
     align: 'center',
-    width: 150,
+    minWidth: 150,
   },
-  {
-    title: '语音克隆',
-    dataIndex: 'roleVoiceclone',
-    key: 'roleVoiceclone',
-    align: 'center',
-    width: 150,
-  },
+  // {
+  //   title: '语音克隆',
+  //   dataIndex: 'voice_clone',
+  //   key: 'voice_clone',
+  //   align: 'center',
+  //   width: 150,
+  // },
   {
     title: '操作',
     key: 'action',
     align: 'center',
-    width: 147,
+    width: 170,
   },
 ])
 
@@ -141,8 +161,10 @@ const handleTableChange = (pagination) => {
 const handleAdd = (type = 'add', record) => {
   editRef.value?.openModal(type, record)
 }
+
+
 onMounted(() => {
-  loadData(getRoleData, 1)
+  searchQuery()
 })
 </script>
 <style lang="scss" scoped>
