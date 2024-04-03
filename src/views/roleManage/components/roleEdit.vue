@@ -1,5 +1,12 @@
 <template>
-  <a-modal :title="dialogType == 'add' ? '新增角色' : dialogType == 'deit' ? '编辑角色' : '角色详情'" :maskClosable="false" v-model:open="isVisible" @ok="handleOk" @cancel="handleCancel" :footer="dialogType == 'detail' ? null : ''">
+  <a-modal
+    :title="dialogType == 'add' ? '新增角色' : dialogType == 'deit' ? '编辑角色' : '角色详情'"
+    :maskClosable="false"
+    v-model:open="isVisible"
+    @ok="handleOk"
+    @cancel="handleCancel"
+    :footer="dialogType == 'detail' ? null : ''"
+  >
     <a-form :model="formState" layout="vertical" ref="formRef" :rules="rules">
       <a-form-item label="角色名称" name="name" v-if="dialogType != 'detail'">
         <a-input v-model:value="formState.name" />
@@ -10,12 +17,12 @@
       <a-row :gutter="12" v-if="dialogType == 'detail'">
         <a-col :span="12">
           <a-form-item label="角色名称" name="name">
-            <a-input v-model:value="formState.name" disabled/>
+            <a-input v-model:value="formState.name" disabled />
           </a-form-item>
         </a-col>
         <a-col :span="12">
           <a-form-item label="角色代码" name="code">
-            <a-input v-model:value="formState.code" disabled/>
+            <a-input v-model:value="formState.code" disabled />
           </a-form-item>
         </a-col>
       </a-row>
@@ -40,11 +47,16 @@
           :before-upload="beforeUpload"
           :customRequest="handleChange"
           accept="image/png, image/jpeg"
-          @mouseenter="handleMouseEnter" 
+          @mouseenter="handleMouseEnter"
           @mouseleave="handleMouseLeave"
           v-if="dialogType == 'edit'"
         >
-          <img class="img" v-if="formState.profilePicture" :src="formState.profilePicture" alt="头像" />
+          <img
+            class="img"
+            v-if="formState.profilePicture"
+            :src="formState.profilePicture"
+            alt="头像"
+          />
           <div v-else>
             <loading-outlined v-if="loading"></loading-outlined>
             <plus-outlined v-else></plus-outlined>
@@ -58,8 +70,19 @@
           ></close-outlined>
         </a-upload>
       </a-form-item>
-      <a-form-item label="头像" name="profilePicture" v-if="dialogType == 'detail' && formState.profilePicture">
-        <img class="img" v-if="formState.profilePicture" :src="formState.profilePicture" alt="头像"  @click="preview" style="cursor: pointer;" />
+      <a-form-item
+        label="头像"
+        name="profilePicture"
+        v-if="dialogType == 'detail' && formState.profilePicture"
+      >
+        <img
+          class="img"
+          v-if="formState.profilePicture"
+          :src="formState.profilePicture"
+          alt="头像"
+          @click="preview"
+          style="cursor: pointer"
+        />
       </a-form-item>
       <a-row :gutter="12" v-if="dialogType == 'detail'">
         <a-col :span="12">
@@ -92,7 +115,6 @@ import { message } from 'ant-design-vue'
 import { addRole, uploadFile, updateRole, buildCurpus } from '@/api'
 // import voiceUpload from './voiceUpload.vue'
 
-
 const emit = defineEmits(['ok'])
 
 const loading = ref(false)
@@ -106,10 +128,10 @@ const formState = reactive({
   profilePicture: '',
 })
 const roleCode = ref('')
-// const detailObj = reactive({
-//   voiceprint: '',
-//   corpus: ''
-// })
+const detailObj = reactive({
+  voiceprint: '',
+  corpus: '',
+})
 
 const rules = {
   name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
@@ -131,44 +153,26 @@ const preview = () => {
   previewVisible.value = true
 }
 
-// const checkeNickName = async (rule, value) => {
-//   if (value) {
-//     const regex = /^[a-zA-Z]*$/
-//     if (!regex.test(value)) {
-//       formState.code = ''
-//       return Promise.reject('只能输入英文字母')
-//     } else {
-//       return Promise.resolve()
-//     }
-//   } else {
-//     return Promise.reject('请输入角色代码')
-//   }
-// }
-
-
 const handleChange = async (info) => {
   loading.value = true
-  // const fileName = options.file.name
-  // const FormDatas = new FormData();
-  // FormDatas.append('file', options.file, fileName);
   const data = await uploadFile(info.file, formState.id)
-  loading.value=false
+  loading.value = false
   formState.profilePicture = data.data.path
 }
 
 //鼠标悬停事件
-const handleMouseEnter=()=> {
-  showDeleteIcon.value = true;
+const handleMouseEnter = () => {
+  showDeleteIcon.value = true
 }
- 
+
 //鼠标离开事件
-const handleMouseLeave=()=> {
-  showDeleteIcon.value = false;
+const handleMouseLeave = () => {
+  showDeleteIcon.value = false
 }
 //删除当前图片
 const deleteImage = () => {
-  formState.profilePicture = ''; // 清除图片数据
-  showDeleteIcon.value = false; // 隐藏删除图标
+  formState.profilePicture = '' // 清除图片数据
+  showDeleteIcon.value = false // 隐藏删除图标
 }
 
 const beforeUpload = (file) => {
@@ -203,7 +207,7 @@ const openModal = (type, record = {}) => {
     formState.voiceprint = record.voiceprint || ''
     roleCode.value = formState.code
   }
-  if(type == 'detail') {
+  if (type == 'detail') {
     detailObj.voiceprint = record.voiceprint || ''
     detailObj.corpus = record.corpus || ''
   }
@@ -212,17 +216,16 @@ const openModal = (type, record = {}) => {
 // 处理确认事件
 const handleOk = () => {
   // 在这里添加保存逻辑
-  let API = dialogType == 'add' ? addRole : updateRole
+  let API = dialogType.value == 'add' ? addRole : updateRole
   nextTick(() => {
     formRef.value.validateFields().then(() => {
-      API(formState).then(res => {
-        if(res.status == 200) {
+      API(formState).then((res) => {
+        if (res.status == 200) {
           message.success('提交成功')
           handleCancel()
-          emit("ok")
+          emit('ok')
         }
       })
-      
     })
   })
 }
@@ -241,21 +244,19 @@ const handleCancel = () => {
 }
 
 const addCorpus = () => {
-  buildCurpus({roleCode: roleCode.value}).then(res => {
-    if(res.status == 200) {
-      message.success('构建成功')
-    } else {
-      message.warning(res.msg)
-    }
-  }).catch(err => {
-    message.warning(err?.msg || '构建失败')
-  })
+  buildCurpus({ roleCode: roleCode.value })
+    .then((res) => {
+      if (res.status == 200) {
+        message.success('构建成功')
+      } else {
+        message.warning(res.msg)
+      }
+    })
+    .catch((err) => {
+      message.warning(err?.msg || '构建失败')
+    })
 }
-const openVoiceprint = () => {
-
-}
-
-const updateVoice = 
+const openVoiceprint = () => {}
 
 defineExpose({
   openModal,
@@ -268,15 +269,15 @@ defineExpose({
   display: flex;
   align-items: center;
   box-sizing: border-box;
-    border: 1px solid rgba(0,0,0,.1);
-    border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
   .showParam {
     flex: 1;
     height: 100%;
     align-self: center;
     margin-right: 10px;
     padding-left: 5px;
-  box-sizing: border-box;
+    box-sizing: border-box;
   }
 }
 </style>

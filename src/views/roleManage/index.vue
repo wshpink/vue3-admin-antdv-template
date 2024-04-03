@@ -49,16 +49,22 @@
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'voiceprint'">
             <span>{{ record.voiceprint }}</span>
-          </template> 
+          </template>
           <template v-if="column.key === 'corpus'">
             <span>{{ record.corpus }}</span>
-          </template> 
+          </template>
           <template v-if="column.key === 'description'">
             <a-tooltip>
-              <template #title>{{record.description}}</template>
-              {{record.description?`${record.description.substring(0, 15)}${record.description.length > 15? '...' : ''}` : ''}}
+              <template #title>{{ record.description }}</template>
+              {{
+                record.description
+                  ? `${record.description.substring(0, 15)}${
+                      record.description.length > 15 ? '...' : ''
+                    }`
+                  : ''
+              }}
             </a-tooltip>
-          </template> 
+          </template>
           <template v-if="column.key === 'action'">
             <span>
               <EditOutlined
@@ -161,7 +167,6 @@ const handleTableChange = (pagination) => {
 const handleAdd = (type = 'add', record) => {
   editRef.value?.openModal(type, record)
 }
-
 
 onMounted(() => {
   searchQuery()
